@@ -1,10 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import QRCode from "qrcode.react";
 import { Route, Redirect, Link } from "react-router-dom";
 import { getUser } from "../_actions/user";
 import { logout } from "../_actions/auth";
 import { connect } from "react-redux";
-import { getMyTicket } from "../_actions/ticket";
+import {
+  getMyTicket,
+  getMyTicket1,
+  getMyTicket2,
+  getMyTicket3
+} from "../_actions/ticket";
+import { getAllPassanger } from "../_actions/passanger";
 import {
   Navbar,
   Nav,
@@ -14,9 +20,10 @@ import {
   Col,
   Container,
   Card,
+  Modal,
   Table
 } from "react-bootstrap";
-
+import Loading from "../utils/loading";
 import { DateArrival, DateFormat, TimeFormat } from "../utils/extra";
 
 const MyTicket = props => {
@@ -29,6 +36,7 @@ const MyTicket = props => {
   const user = props.user;
   const token = localStorage.getItem("token");
   const tiket = props.ticket;
+  const [passanger, setPassanger] = useState(false);
   const handleLogout = e => {
     e.preventDefault();
     localStorage.removeItem("token");
@@ -41,6 +49,25 @@ const MyTicket = props => {
     window.location.reload();
   };
 
+  const handleFilter = () => {
+    const status = localStorage.getItem("status");
+    if (status === "Waiting Payment") {
+      props.getMyTicket1();
+    } else if (status === "Paid") {
+      props.getMyTicket2();
+    } else if (status === "Approved") {
+      props.getMyTicket3();
+    } else {
+      props.getMyTicket();
+    }
+  };
+
+  const handlePassanger = (e, id_transaction) => {
+    e.preventDefault();
+    props.getAllPassanger(id_transaction);
+    setPassanger(true);
+  };
+
   return !loginData.isLogin && !token ? (
     <Route>
       <Redirect
@@ -50,7 +77,7 @@ const MyTicket = props => {
       />
     </Route>
   ) : tiket.loading || user.loading || !tiket.data ? (
-    <h1>Loading Bos...</h1>
+    <Loading />
   ) : (
     <div className="App-body-landing">
       <Navbar bg="light" expand="lg">
@@ -96,11 +123,34 @@ const MyTicket = props => {
       </Navbar>
       <div>
         <Container className="mt-2">
-          <h4>Tiket Saya</h4>
-          {!tiket.data || tiket.loading ? (
+          <Row>
+            <Col className="col-lg-9">
+              {" "}
+              <h4>Tiket Saya</h4>
+            </Col>
+            <Col className="col-lg-3">
+              <Form.Group>
+                <Form.Control
+                  as="select"
+                  value={localStorage.getItem("status")}
+                  onChange={e => [
+                    localStorage.setItem("status", e.target.value),
+                    handleFilter()
+                  ]}
+                >
+                  <option value="All">-Semua Transaksi-</option>
+                  <option value="Waiting Payment">Waiting Payment</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Approved">Approved</option>
+                </Form.Control>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          {!props.ticket.myData || props.ticket.loading ? (
             <h1>Loading...</h1>
           ) : (
-            tiket.data.map((item, index) => (
+            props.ticket.myData.map((item, index) => (
               <Card className="mt-3" key={index}>
                 <div style={{ padding: "1rem" }}>
                   <Row>
@@ -164,7 +214,6 @@ const MyTicket = props => {
                         </Col>
                       </Row>
                     </Col>
-                    <Col></Col>
                     <Col>
                       <div className="text-right">
                         <QRCode
@@ -177,39 +226,76 @@ const MyTicket = props => {
                   </Row>
 
                   <div className="mt-3">
-                    <h5>Penumpang</h5>
-                    <Table hover responsive>
-                      <thead>
-                        <tr>
-                          <th>No. Identitas</th>
-                          <th>Nama Pemesan</th>
-                          <th>No. Handphone</th>
-                          <th>Email</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{item.user.identity}</td>
-                          <td>{item.user.name}</td>
-                          <td>{item.user.phone}</td>
-                          <td>{item.user.email}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                    <Link to="/payment">
+                    {item.status === "Waiting Payment" ? (
+                      <>
+                        <Link to="/payment">
+                          <Button
+                            style={{ float: "right" }}
+                            onClick={() =>
+                              localStorage.setItem("tiket", item.id)
+                            }
+                          >
+                            Bayar Sekarang
+                          </Button>
+                        </Link>
+                        <Button
+                          className="mr-2"
+                          style={{ float: "right" }}
+                          onClick={e =>
+                            handlePassanger(e, item.transaction_code)
+                          }
+                        >
+                          Detail Penumpang
+                        </Button>
+                      </>
+                    ) : (
                       <Button
                         style={{ float: "right" }}
-                        onClick={() => localStorage.setItem("tiket", item.id)}
+                        onClick={e => handlePassanger(e, item.transaction_code)}
                       >
-                        Bayar Sekarang
+                        Detail Penumpang
                       </Button>
-                    </Link>
+                    )}
                   </div>
                 </Card.Body>
               </Card>
             ))
           )}
         </Container>
+        <Modal show={passanger} onHide={() => setPassanger(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>List Penumpang</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Table bordered>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Identitas</th>
+                  <th>Nama</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!props.passanger.detail ? (
+                  <h1>Hello World</h1>
+                ) : (
+                  props.passanger.detail.map((item, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{item.identity}</td>
+                      <td>{item.name}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setPassanger(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );
@@ -234,7 +320,8 @@ const mapStateToProps = state => {
     stations: state.stations,
     login: state.login,
     user: state.user,
-    ticket: state.ticket
+    ticket: state.ticket,
+    passanger: state.passanger
   };
 };
 
@@ -242,7 +329,12 @@ const mapDispatchToProps = dispatch => {
   return {
     getUser: () => dispatch(getUser()),
     logout: () => dispatch(logout()),
-    getMyTicket: () => dispatch(getMyTicket())
+    getMyTicket: () => dispatch(getMyTicket()),
+    getAllPassanger: id_transaction =>
+      dispatch(getAllPassanger(id_transaction)),
+    getMyTicket1: () => dispatch(getMyTicket1()),
+    getMyTicket2: () => dispatch(getMyTicket2()),
+    getMyTicket3: () => dispatch(getMyTicket3())
   };
 };
 

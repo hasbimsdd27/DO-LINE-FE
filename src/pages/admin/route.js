@@ -23,7 +23,7 @@ import {
 } from "../../_actions/route";
 import { getTrains } from "../../_actions/train";
 import { getStation } from "../../_actions/station";
-
+import Loading from "../../utils/loading";
 import { TimeFormat, IDRcurrency } from "../../utils/extra";
 
 const AdmRoutes = props => {
@@ -80,8 +80,8 @@ const AdmRoutes = props => {
   const handleEdit = async (e, id) => {
     e.preventDefault();
     const data = { origin, departure, destination, arrival, id_train, price };
-    console.log(data);
-    const res = await props.updateTrain(data, id);
+    console.log(data, id);
+    const res = await props.updateRoute(data, id);
     if (res.action.type === "UPDATE_ROUTE_FULFILLED") {
       setmodalEdit(false);
     }
@@ -96,7 +96,7 @@ const AdmRoutes = props => {
       />
     </Route>
   ) : user.loading ? (
-    <h1>Loading</h1>
+    <Loading />
   ) : user.data.level !== "admin" ? (
     <Route>
       <Redirect
@@ -118,17 +118,14 @@ const AdmRoutes = props => {
             <Nav className="mr-auto"></Nav>
             <Form inline>
               <div className="APP-dropdown">
-                <h5 className="text-primary">
-                  {user.data.name}
-                  <i className="fas fa-user ml-2"></i>
-                </h5>
+                <h5>{user.data.name}</h5>
                 <div className="APP-dropdown-content">
-                  <div className="mt-2 mb-2">
+                  {/* <div className="mt-2 mb-2">
                     {" "}
                     <Link to="/addticket">
                       <h6>Tambah Tiket</h6>
                     </Link>
-                  </div>
+                  </div> */}
                   <div className="mt-2 mb-2">
                     {" "}
                     <Link to="/station">
@@ -137,14 +134,14 @@ const AdmRoutes = props => {
                   </div>
                   <div className="mt-2 mb-2">
                     {" "}
-                    <Link to="/route">
-                      <h6>Rute</h6>
+                    <Link to="/train">
+                      <h6>Kereta Api</h6>
                     </Link>
                   </div>
                   <div className="mt-2 mb-2">
                     {" "}
-                    <Link to="/train">
-                      <h6>Kereta Api</h6>
+                    <Link to="/route">
+                      <h6>Rute</h6>
                     </Link>
                   </div>
                   <hr></hr>
@@ -326,7 +323,11 @@ const AdmRoutes = props => {
         </Modal.Header>
 
         {route.loading || route.detail == [] ? (
-          <h1>Loading</h1>
+          <Modal.Body>
+            <div className="text-center">
+              <h3>Loading</h3>
+            </div>
+          </Modal.Body>
         ) : (
           <>
             <Modal.Body>
@@ -427,7 +428,7 @@ const AdmRoutes = props => {
             <Modal.Footer>
               <Button
                 variant="primary"
-                onClick={e => handleEdit(e, train.detail.id)}
+                onClick={e => handleEdit(e, route.detail.id)}
               >
                 Save Changes
               </Button>

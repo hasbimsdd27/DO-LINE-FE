@@ -21,7 +21,7 @@ import {
   detailStation,
   updateStation
 } from "../../_actions/station";
-
+import Loading from "../../utils/loading";
 const Station = props => {
   const loginData = props.login;
   const user = props.user;
@@ -87,7 +87,7 @@ const Station = props => {
       />
     </Route>
   ) : user.loading ? (
-    <h1>Loading</h1>
+    <Loading />
   ) : user.data.level !== "admin" ? (
     <Route>
       <Redirect
@@ -109,17 +109,14 @@ const Station = props => {
             <Nav className="mr-auto"></Nav>
             <Form inline>
               <div className="APP-dropdown">
-                <h5 className="text-primary">
-                  {user.data.name}
-                  <i className="fas fa-user ml-2"></i>
-                </h5>
+                <h5>{user.data.name}</h5>
                 <div className="APP-dropdown-content">
-                  <div className="mt-2 mb-2">
+                  {/* <div className="mt-2 mb-2">
                     {" "}
                     <Link to="/addticket">
                       <h6>Tambah Tiket</h6>
                     </Link>
-                  </div>
+                  </div> */}
                   <div className="mt-2 mb-2">
                     {" "}
                     <Link to="/station">
@@ -128,14 +125,14 @@ const Station = props => {
                   </div>
                   <div className="mt-2 mb-2">
                     {" "}
-                    <Link to="/route">
-                      <h6>Rute</h6>
+                    <Link to="/train">
+                      <h6>Kereta Api</h6>
                     </Link>
                   </div>
                   <div className="mt-2 mb-2">
                     {" "}
-                    <Link to="/train">
-                      <h6>Kereta Api</h6>
+                    <Link to="/route">
+                      <h6>Rute</h6>
                     </Link>
                   </div>
                   <hr></hr>
@@ -241,7 +238,11 @@ const Station = props => {
         </Modal.Header>
 
         {stations.loading ? (
-          <h1>Loading</h1>
+          <Modal.Body>
+            <div className="text-center">
+              <h3>Loading</h3>
+            </div>
+          </Modal.Body>
         ) : (
           <>
             <Modal.Body>
