@@ -48,12 +48,17 @@ const Booking = props => {
   const [identity3, setIdentity3] = useState(null);
   const [identity4, setIdentity4] = useState(null);
   const [message, setMessage] = useState(false);
+  const [redirect, setRedirect] = useState(false);
   const handleLogout = e => {
     e.preventDefault();
     localStorage.removeItem("token");
     localStorage.removeItem("tiket");
+    localStorage.removeItem("baby");
+    localStorage.removeItem("adult");
+    localStorage.removeItem("routeID");
+    localStorage.removeItem("departure");
     props.logout();
-    window.location.reload();
+    setRedirect(true);
   };
 
   const handleData = e => {
@@ -107,7 +112,7 @@ const Booking = props => {
     setMessage(true);
   };
 
-  return !loginData.isLogin && !token ? (
+  return (!loginData.isLogin && !token) || redirect ? (
     <Route>
       <Redirect
         to={{

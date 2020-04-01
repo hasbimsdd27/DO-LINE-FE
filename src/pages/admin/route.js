@@ -40,6 +40,7 @@ const AdmRoutes = props => {
   const [id_train, setIdTrain] = useState(null);
   const [price, setPrice] = useState(null);
   const [modalEdit, setmodalEdit] = useState(false);
+  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     props.getUser();
@@ -57,7 +58,7 @@ const AdmRoutes = props => {
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
     props.logout();
-    window.location.reload();
+    setRedirect(true);
   };
 
   const handleAdd = e => {
@@ -87,7 +88,7 @@ const AdmRoutes = props => {
     }
   };
 
-  return loginData.isLogin === false && token == null ? (
+  return (!loginData.isLogin && !token) || redirect ? (
     <Route>
       <Redirect
         to={{

@@ -31,7 +31,7 @@ const MyTicket = props => {
     props.getUser();
     props.getMyTicket();
   }, []);
-
+  const [redirect, setRedirect] = useState(false);
   const loginData = props.login;
   const user = props.user;
   const token = localStorage.getItem("token");
@@ -46,7 +46,7 @@ const MyTicket = props => {
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
     props.logout();
-    window.location.reload();
+    setRedirect(true);
   };
 
   const handleFilter = () => {
@@ -68,7 +68,7 @@ const MyTicket = props => {
     setPassanger(true);
   };
 
-  return !loginData.isLogin && !token ? (
+  return (!loginData.isLogin && !token) || redirect ? (
     <Route>
       <Redirect
         to={{

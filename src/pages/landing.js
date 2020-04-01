@@ -84,7 +84,6 @@ const Landing = (props, action) => {
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
     props.logout();
-    window.location.reload();
   };
 
   const handleSubmitReg = async e => {

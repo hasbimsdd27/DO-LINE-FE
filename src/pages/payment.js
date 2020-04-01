@@ -32,6 +32,7 @@ const Payment = props => {
     props.getUser();
     props.getDetailTicket();
   }, []);
+  const [redirect, setRedirect] = useState(false);
   const loginData = props.login;
   const token = localStorage.getItem("token");
   const idTrx = localStorage.getItem("tiket");
@@ -49,7 +50,7 @@ const Payment = props => {
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
     props.logout();
-    window.location.reload();
+    setRedirect(true);
   };
 
   const uploadImage = async e => {
@@ -61,7 +62,7 @@ const Payment = props => {
     }
   };
 
-  return !loginData.isLogin && !token ? (
+  return (!loginData.isLogin && !token) || redirect ? (
     <Route>
       <Redirect
         to={{

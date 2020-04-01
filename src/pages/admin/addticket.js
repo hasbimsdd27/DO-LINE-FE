@@ -21,6 +21,7 @@ const Transaction = props => {
   const user = props.user;
   const token = localStorage.getItem("token");
   const [jamBerangkat, setJamBerngkat] = useState(null);
+  const [redirect, setRedirect] = useState(false);
   const handleLogout = e => {
     e.preventDefault();
     localStorage.removeItem("token");
@@ -30,10 +31,10 @@ const Transaction = props => {
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
     props.logout();
-    window.location.reload();
+    setRedirect(true);
   };
 
-  return loginData.isLogin === false && token == null ? (
+  return (!loginData.isLogin && !token) || redirect ? (
     <Route>
       <Redirect
         to={{

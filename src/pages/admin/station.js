@@ -31,6 +31,7 @@ const Station = props => {
   const [code, setCode] = useState(null);
   const [wilayah, setWilayah] = useState(null);
   const [modalEdit, setmodalEdit] = useState(false);
+  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     props.getUser();
@@ -46,7 +47,7 @@ const Station = props => {
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
     props.logout();
-    window.location.reload();
+    setRedirect(true);
   };
 
   const handleAddStation = e => {
@@ -78,7 +79,7 @@ const Station = props => {
     }
   };
 
-  return loginData.isLogin === false && token == null ? (
+  return (!loginData.isLogin && !token) || redirect ? (
     <Route>
       <Redirect
         to={{

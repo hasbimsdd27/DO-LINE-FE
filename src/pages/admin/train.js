@@ -32,7 +32,7 @@ const AdmTrains = props => {
   const [seats, setSeats] = useState(null);
   const [classData, setClassData] = useState(null);
   const [modalEdit, setmodalEdit] = useState(false);
-
+  const [redirect, setRedirect] = useState(false);
   useEffect(() => {
     props.getUser();
     props.getTrains();
@@ -40,14 +40,14 @@ const AdmTrains = props => {
 
   const handleLogout = e => {
     e.preventDefault();
-    props.logout();
     localStorage.removeItem("token");
     localStorage.removeItem("tiket");
     localStorage.removeItem("baby");
     localStorage.removeItem("adult");
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
-    window.location.reload();
+    props.logout();
+    setRedirect(true);
   };
 
   const handleAdd = e => {
@@ -77,7 +77,7 @@ const AdmTrains = props => {
     }
   };
 
-  return loginData.isLogin === false && token == null ? (
+  return (!loginData.isLogin && !token) || redirect ? (
     <Route>
       <Redirect
         to={{
