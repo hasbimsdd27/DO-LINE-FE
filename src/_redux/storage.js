@@ -8,7 +8,7 @@ import train from "../_reducers/train";
 import routes from "../_reducers/routes";
 import passanger from "../_reducers/passanger";
 import transaction from "../_reducers/transaction";
-import { promise, logger } from "../middleware";
+import { promise } from "../middleware";
 
 const rootReducers = combineReducers({
   stations,
@@ -21,5 +21,5 @@ const rootReducers = combineReducers({
   passanger
 });
 
-const store = createStore(rootReducers, applyMiddleware(promise, logger));
+const store = createStore(rootReducers, applyMiddleware(promise));
 export default store;

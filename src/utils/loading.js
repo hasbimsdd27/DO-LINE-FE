@@ -1,7 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import "./loading.css";
 
 const Loading = () => {
-  return <div class="loader"></div>;
+  return (
+    <>
+      <div className="Loading">
+        <div className="loader-container">
+          <div className="loader-div"></div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Loading;

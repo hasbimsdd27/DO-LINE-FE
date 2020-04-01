@@ -40,13 +40,13 @@ const AdmTrains = props => {
 
   const handleLogout = e => {
     e.preventDefault();
+    props.logout();
     localStorage.removeItem("token");
     localStorage.removeItem("tiket");
     localStorage.removeItem("baby");
     localStorage.removeItem("adult");
     localStorage.removeItem("routeID");
     localStorage.removeItem("departure");
-    props.logout();
     window.location.reload();
   };
 
@@ -85,8 +85,6 @@ const AdmTrains = props => {
         }}
       />
     </Route>
-  ) : user.loading ? (
-    <Loading />
   ) : user.data.level !== "admin" ? (
     <Route>
       <Redirect
@@ -95,6 +93,8 @@ const AdmTrains = props => {
         }}
       />
     </Route>
+  ) : user.loading ? (
+    <Loading />
   ) : (
     <div className="App-body-landing">
       <Navbar bg="light" expand="lg">

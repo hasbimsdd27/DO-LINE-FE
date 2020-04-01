@@ -82,8 +82,6 @@ const AddTicket = props => {
         }}
       />
     </Route>
-  ) : user.loading || transaction.loading ? (
-    <Loading />
   ) : user.data.level !== "admin" ? (
     <Route>
       <Redirect
@@ -92,6 +90,8 @@ const AddTicket = props => {
         }}
       />
     </Route>
+  ) : user.loading ? (
+    <Loading />
   ) : (
     <div className="App-body-landing">
       <Navbar bg="light" expand="lg">

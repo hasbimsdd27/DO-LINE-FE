@@ -86,8 +86,6 @@ const Station = props => {
         }}
       />
     </Route>
-  ) : user.loading ? (
-    <Loading />
   ) : user.data.level !== "admin" ? (
     <Route>
       <Redirect
@@ -96,6 +94,8 @@ const Station = props => {
         }}
       />
     </Route>
+  ) : user.loading ? (
+    <Loading />
   ) : (
     <div className="App-body-landing">
       <Navbar bg="light" expand="lg">
