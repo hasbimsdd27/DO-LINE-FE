@@ -29,7 +29,7 @@ const stations = (state = initialState, action) => {
     case `${REGISTER}_REJECTED`:
       return {
         ...state,
-        data: false,
+        loading: false,
         error: true,
         isLogin: false
       };
